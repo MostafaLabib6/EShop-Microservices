@@ -1,8 +1,4 @@
-﻿using Catalog.API.Models;
-using Mapster;
-using Utilities.CQRS;
-
-namespace Catalog.API.ProductFeatures.CreateProduct;
+﻿namespace Catalog.API.ProductFeatures.CreateProduct;
 
 public record CreateProductCommand(CreateProductDto product) : ICommand<CreateProductResponse>
 {
@@ -11,7 +7,8 @@ public record CreateProductResponse(Guid Id)
 {
 }
 
-internal class CreateProductHandler : ICommandHandler<CreateProductCommand, CreateProductResponse>
+internal class CreateProductHandler(IDocumentSession Session)
+    : ICommandHandler<CreateProductCommand, CreateProductResponse>
 {
     public async Task<CreateProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
@@ -20,6 +17,9 @@ internal class CreateProductHandler : ICommandHandler<CreateProductCommand, Crea
         // return response
 
         var product = command.product.Adapt<Product>();
+
+        Session.Store(product);
+        await Session.SaveChangesAsync();
 
         return new CreateProductResponse(product.Id);
     }
