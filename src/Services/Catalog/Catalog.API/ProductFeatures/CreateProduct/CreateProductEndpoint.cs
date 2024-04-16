@@ -1,8 +1,4 @@
-﻿using Carter;
-using Mapster;
-using MediatR;
-
-namespace Catalog.API.ProductFeatures.CreateProduct;
+﻿namespace Catalog.API.ProductFeatures.CreateProduct;
 
 public record CreateProductDto(string Name, string Description, decimal Price, string ImageFile, List<int> CategoryIds);
 
