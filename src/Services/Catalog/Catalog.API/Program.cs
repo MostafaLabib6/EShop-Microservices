@@ -1,4 +1,4 @@
-using Carter;
+using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +11,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddCarter();
+builder.Services.AddMarten(optionSource =>
+{
+    optionSource.Connection(
+        builder.Configuration.GetConnectionString("CatalogDb")!);
+    optionSource.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+}
+);
 
 var app = builder.Build();
 
