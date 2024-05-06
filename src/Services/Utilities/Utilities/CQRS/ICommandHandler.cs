@@ -4,7 +4,7 @@ namespace Utilities.CQRS;
 
 public interface ICommandHandler<in TCommand>
     : ICommandHandler<TCommand, Unit>
-    where TCommand : ICommand
+    where TCommand : ICommand<Unit>
 {
 }
 
