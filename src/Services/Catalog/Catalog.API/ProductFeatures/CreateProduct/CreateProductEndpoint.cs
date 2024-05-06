@@ -1,26 +1,23 @@
-﻿namespace Catalog.API.ProductFeatures.CreateProduct;
-
-public record CreateProductDto(string Name, string Description, decimal Price, string ImageFile, List<int> CategoryIds);
-
+﻿namespace Catalog.API.Products.CreateProduct;
 
 public class CreateProductEndpoint : ICarterModule
 {
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPost("/api/products", async (CreateProductDto product, ISender sender) =>
-        {
-            var command = product.Adapt<CreateProductDto>();
+	public void AddRoutes(IEndpointRouteBuilder app)
+	{
+		app.MapPost("/products",
+			async (ProductDto request, IMediator sender) =>
+			{
 
-            var result = await sender.Send(command);
+				var product = await sender.Send(new CreateProductCommand(request));
 
-            var response = result.Adapt<CreateProductResponse>();
+				//return Results.Created($"/products/{result}", result);
+				return Results.CreatedAtRoute("GetProductById", new { id = product }, product);
 
-            return Results.Created($"/products/{response.Id}", response);
-        })
-          .WithName("Create Product")
-          .Produces<CreateProductResponse>(StatusCodes.Status201Created)
-          .ProducesProblem(StatusCodes.Status400BadRequest)
-          .WithDescription("Create a product");
-
-    }
+			})
+		.WithName("CreateProduct")
+		.Produces<ProductDto>(StatusCodes.Status201Created)
+		.ProducesProblem(StatusCodes.Status400BadRequest)
+		.WithSummary("Create Product")
+		.WithDescription("Create Product");
+	}
 }

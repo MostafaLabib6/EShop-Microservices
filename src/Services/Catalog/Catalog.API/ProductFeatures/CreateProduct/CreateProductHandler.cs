@@ -1,27 +1,20 @@
-﻿namespace Catalog.API.ProductFeatures.CreateProduct;
+﻿namespace Catalog.API.Products.CreateProduct;
+public record CreateProductCommand(ProductDto product)
+	: ICommand<Product>
+{ }
 
-public record CreateProductCommand(CreateProductDto product) : ICommand<CreateProductResponse>
+internal class CreateProductCommandHandler
+	(IDocumentSession session)
+	: ICommandHandler<CreateProductCommand, Product>
 {
+	public async Task<Product> Handle(CreateProductCommand command, CancellationToken cancellationToken)
+	{
+		var product = command.product.Adapt<Product>();
+
+		session.Store(product);
+		await session.SaveChangesAsync(cancellationToken);
+
+		return product;
+
+	}
 }
-public record CreateProductResponse(Guid Id)
-{
-}
-
-internal class CreateProductHandler(IDocumentSession Session)
-    : ICommandHandler<CreateProductCommand, CreateProductResponse>
-{
-    public async Task<CreateProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)
-    {
-        // map dto to entity
-        // save entity
-        // return response
-
-        var product = command.product.Adapt<Product>();
-
-        Session.Store(product);
-        await Session.SaveChangesAsync();
-
-        return new CreateProductResponse(product.Id);
-    }
-}
-
