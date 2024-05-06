@@ -4,11 +4,12 @@ public record CreateProductCommand(ProductDto product)
 { }
 
 internal class CreateProductCommandHandler
-	(IDocumentSession session)
+	(IDocumentSession session, ILogger<CreateProductCommandHandler> _logger)
 	: ICommandHandler<CreateProductCommand, Product>
 {
 	public async Task<Product> Handle(CreateProductCommand command, CancellationToken cancellationToken)
 	{
+		_logger.LogInformation("CreateProductCommandHandler.handle called with {@command} ", command);
 		var product = command.product.Adapt<Product>();
 
 		session.Store(product);

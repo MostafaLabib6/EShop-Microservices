@@ -2,12 +2,12 @@
 
 public record GetProductsQuery : IQuery<GetProductsResponse>;
 public record GetProductsResponse(IReadOnlyList<ProductDto> Products);
-internal class GetProductsHandler(IDocumentSession _session /*, Logger<GetProductsHandler> _logger*/) : IQueryHandler<GetProductsQuery, GetProductsResponse>
+internal class GetProductsHandler(IDocumentSession _session, ILogger<GetProductsHandler> _logger) : IQueryHandler<GetProductsQuery, GetProductsResponse>
 {
 
 	Task<GetProductsResponse> IRequestHandler<GetProductsQuery, GetProductsResponse>.Handle(GetProductsQuery query, CancellationToken cancellationToken)
 	{
-		//_logger.LogInformation("GetProductsHandler.Handle with {@query}", query);
+		_logger.LogInformation("GetProductsHandler.Handle with {@query}", query);
 
 		var products = _session.Query<Product>().ToList();
 
