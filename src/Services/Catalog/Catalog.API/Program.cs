@@ -1,5 +1,3 @@
-using Weasel.Core;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,15 +7,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddCarter();
-builder.Services.AddMarten(optionSource =>
+var assembly = typeof(Program).Assembly;
+builder.Services.AddMediatR(config =>
 {
-    optionSource.Connection(
-        builder.Configuration.GetConnectionString("CatalogDb")!);
-    optionSource.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
-}
-);
+    config.RegisterServicesFromAssembly(assembly);
+
+});
+
+var config = TypeAdapterConfig.GlobalSettings;
+config.Scan(typeof(Program).Assembly);
+builder.Services.AddSingleton(config);
+
+
+
+builder.Services.AddCarter();
+
+builder.Services.AddMarten(opts =>
+{
+    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
+}).UseLightweightSessions();
+
+
 
 var app = builder.Build();
 
@@ -29,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+//app.UseRouting();
 
 //app.UseAuthorization();
 
