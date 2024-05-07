@@ -8,7 +8,7 @@ internal class UpdateProductCommandHandler(ILogger<UpdateProductCommandHandler> 
 	{
 		_logger.LogInformation($"UpdateProductCommandHandler.Handle {request!}");
 
-		_session.Store(request.Product);
+		_session.Update(request.Product);
 		await _session.SaveChangesAsync(cancellationToken);
 
 		return Unit.Value;
