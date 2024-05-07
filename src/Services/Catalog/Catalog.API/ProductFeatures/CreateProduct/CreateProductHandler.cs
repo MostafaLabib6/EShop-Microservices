@@ -1,4 +1,6 @@
-﻿namespace Catalog.API.Products.CreateProduct;
+﻿using Catalog.API.Dtos;
+
+namespace Catalog.API.Products.CreateProduct;
 public record CreateProductCommand(ProductDto product)
 	: ICommand<Product>
 { }
