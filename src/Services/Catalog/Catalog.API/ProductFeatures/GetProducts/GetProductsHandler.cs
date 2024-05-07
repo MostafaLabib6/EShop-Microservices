@@ -1,18 +1,18 @@
 ﻿namespace Catalog.API.ProductFeatures.GetProducts;
 
 public record GetProductsQuery : IQuery<GetProductsResponse>;
-public record GetProductsResponse(IReadOnlyList<Product> Products);
+public record GetProductsResponse(IEnumerable<Product> Products);
 internal class GetProductsHandler(IDocumentSession _session, ILogger<GetProductsHandler> _logger) : IQueryHandler<GetProductsQuery, GetProductsResponse>
 {
 
-	Task<GetProductsResponse> IRequestHandler<GetProductsQuery, GetProductsResponse>.Handle(GetProductsQuery query, CancellationToken cancellationToken)
+	public async Task<GetProductsResponse> Handle(GetProductsQuery command, CancellationToken cancellationToken)
 	{
-		_logger.LogInformation("GetProductsHandler.Handle with {@query}", query);
+		_logger.LogInformation($"GetProductsHandler.Handle {command!}");
 
-		var products = _session.Query<Product>().ToList();
+		var result = await _session.Query<Product>().OrderBy(x => x.Name).ToListAsync();
 
-		//var productDtos = products.Adapt<IReadOnlyList<ProductDto>>();
+		var products = result.Adapt<IEnumerable<Product>>();
 
-		return Task.FromResult(new GetProductsResponse(products)); // valid case case products already has a value not waiting for it.
+		return new GetProductsResponse(products);
 	}
 }
